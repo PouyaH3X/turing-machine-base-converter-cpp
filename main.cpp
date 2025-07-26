@@ -14,9 +14,17 @@ struct Transition
     string direction;
 };
 
-vector<Transition> loadTransitions()
+#include <vector>
+#include <string>
+using namespace std;
+
+vector<Transition> loadTransitions(int x, int y)
 {
-    return {
+    // Convert x-1 and y+1 to strings once
+    string xMinusOne = to_string(x - 1);
+    string yPlusOne = to_string(y + 1);
+
+    vector<Transition> transitions = {
         {"q0", "a", "q0", "a", "R"},
         {"q0", "_", "q1", "#", "L"},
         {"q1", "0", "q4", "7", "L"},
@@ -41,4 +49,18 @@ vector<Transition> loadTransitions()
         {"q9", "_", "q10", "_", "L"},
         {"q10", "2", "q6", "0", "L"},
         {"q10", "a", "q3", "a+1", "L"}};
+
+    for (auto &t : transitions)
+    {
+        if (t.read_symbol == "7")
+            t.read_symbol = xMinusOne;
+        if (t.write_symbol == "7")
+            t.write_symbol = xMinusOne;
+        if (t.read_symbol == "2")
+            t.read_symbol = yPlusOne;
+        if (t.write_symbol == "2")
+            t.write_symbol = yPlusOne;
+    }
+
+    return transitions;
 }
