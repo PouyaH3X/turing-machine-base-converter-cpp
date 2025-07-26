@@ -64,3 +64,33 @@ vector<Transition> loadTransitions(int x, int y)
 
     return transitions;
 }
+
+bool applyTransition(string &tape, int &head, string &state, const vector<Transition> &transitions)
+{
+    for (const auto &t : transitions)
+    {
+        char current_symbol = tape[head];
+
+        bool match = (state == t.current_state) &&
+                     (t.read_symbol == string(1, current_symbol) || (t.read_symbol == "a" && isdigit(current_symbol)));
+
+        if (match)
+        {
+            state = t.next_state;
+
+            // Write symbol
+            if (t.write_symbol == "a-1")
+                tape[head] = current_symbol - 1;
+            else if (t.write_symbol == "a+1")
+                tape[head] = current_symbol + 1;
+            else
+                tape[head] = t.write_symbol[0];
+
+            // Move head
+            head += (t.direction == "R") ? 1 : -1;
+
+            return true;
+        }
+    }
+    return false;
+}
