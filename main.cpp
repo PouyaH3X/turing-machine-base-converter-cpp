@@ -110,3 +110,19 @@ string runTuringMachine(string input, const vector<Transition> &transitions)
 
     return tape;
 }
+
+string extractOutput(const string &tape)
+{
+    string output;
+    bool started = false;
+    for (char ch : tape)
+    {
+        if (started && ch == '_')
+            break;
+        if (started)
+            output += ch;
+        if (ch == '#')
+            started = true;
+    }
+    return output;
+}
