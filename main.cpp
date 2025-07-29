@@ -94,3 +94,19 @@ bool applyTransition(string &tape, int &head, string &state, const vector<Transi
     }
     return false;
 }
+
+string runTuringMachine(string input, const vector<Transition> &transitions)
+{
+    string tape = "_" + input + "_____________________________________";
+    int head = 1;
+    string state = "q0";
+    const string end_state = "qf";
+
+    while (state != end_state)
+    {
+        if (!applyTransition(tape, head, state, transitions))
+            break; // Stop if no transition matches
+    }
+
+    return tape;
+}
