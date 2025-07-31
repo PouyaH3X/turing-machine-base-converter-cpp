@@ -126,3 +126,17 @@ string extractOutput(const string &tape)
     }
     return output;
 }
+
+int main()
+{
+    string input;
+    cout << "Please enter a number: ";
+    cin >> input;
+
+    auto transitions = loadTransitions();
+    string final_tape = runTuringMachine(input, transitions);
+    string output = extractOutput(final_tape);
+
+    cout << "Output: " << output << endl;
+    return 0;
+}
