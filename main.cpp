@@ -54,7 +54,6 @@ vector<Transition> loadTransitions(int x, int y)
 
     for (auto &t : transitions)
     {
-        cout << t.read_symbol;
         if (t.write_symbol == "x")
             t.write_symbol = xMinusOne;
         if (t.read_symbol == "y")
@@ -79,12 +78,15 @@ bool applyTransition(string &tape, int &head, string &state, const vector<Transi
                 tape[head] = current_symbol - 1;
             else if (t.write_symbol == "a+1")
                 tape[head] = current_symbol + 1;
+            else if (t.write_symbol == "a")
+                tape[head] = current_symbol;
             else
                 tape[head] = t.write_symbol[0];
             // Move head
             head += (t.direction == "R") ? 1 : -1;
             return true;
         }
+        // cout << tape << endl;
     }
     return false;
 }
@@ -92,6 +94,7 @@ bool applyTransition(string &tape, int &head, string &state, const vector<Transi
 string runTuringMachine(string input, const vector<Transition> &transitions)
 {
     string tape = "_" + input + "_____________________________________";
+    // cout << tape << endl;
     int head = 1;
     string state = "q0";
     const string end_state = "qf";
@@ -129,6 +132,7 @@ int main()
 
     auto transitions = loadTransitions(8, 3);
     string final_tape = runTuringMachine(input, transitions);
+    // cout << final_tape;
     string output = extractOutput(final_tape);
 
     cout << "Output: " << output << endl;
