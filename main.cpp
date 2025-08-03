@@ -12,6 +12,8 @@ struct Transition
     string next_state;
     string write_symbol;
     string direction;
+    Transition(string cs, string rs, string ns, string ws, string dir)
+        : current_state(cs), read_symbol(rs), next_state(ns), write_symbol(ws), direction(dir) {}
 };
 
 #include <vector>
@@ -20,26 +22,26 @@ using namespace std;
 
 vector<Transition> loadTransitions(int x, int y)
 {
-    // Convert x-1 and y+1 to strings once
+    // Convert x-1 and y-1 to strings once
     string xMinusOne = to_string(x - 1);
-    string yPlusOne = to_string(y + 1);
+    string yMinusOne = to_string(y - 1);
 
     vector<Transition> transitions = {
         {"q0", "a", "q0", "a", "R"},
         {"q0", "_", "q1", "#", "L"},
-        {"q1", "0", "q4", "7", "L"},
+        {"q1", "0", "q4", "x", "L"},
         {"q1", "a", "q2", "a-1", "R"},
         {"q2", "#", "q2", "#", "R"},
         {"q2", "_", "q3", "1", "L"},
         {"q2", "a", "q9", "a", "R"},
         {"q3", "#", "q1", "#", "L"},
         {"q3", "a", "q3", "a", "L"},
-        {"q4", "0", "q4", "7", "L"},
+        {"q4", "0", "q4", "x", "L"},
         {"q4", "a", "q5", "a-1", "R"},
         {"q4", "_", "qf", "_", "R"},
         {"q5", "a", "q5", "a", "R"},
         {"q5", "#", "q2", "#", "R"},
-        {"q6", "2", "q6", "0", "L"},
+        {"q6", "y", "q6", "0", "L"},
         {"q6", "a", "q3", "a+1", "L"},
         {"q6", "#", "q7", "#", "R"},
         {"q7", "0", "q8", "1", "R"},
@@ -47,19 +49,16 @@ vector<Transition> loadTransitions(int x, int y)
         {"q8", "_", "q3", "0", "L"},
         {"q9", "a", "q9", "a", "R"},
         {"q9", "_", "q10", "_", "L"},
-        {"q10", "2", "q6", "0", "L"},
+        {"q10", "y", "q6", "0", "L"},
         {"q10", "a", "q3", "a+1", "L"}};
 
     for (auto &t : transitions)
     {
-        if (t.read_symbol == "7")
-            t.read_symbol = xMinusOne;
-        if (t.write_symbol == "7")
+        cout << t.read_symbol;
+        if (t.write_symbol == "x")
             t.write_symbol = xMinusOne;
-        if (t.read_symbol == "2")
-            t.read_symbol = yPlusOne;
-        if (t.write_symbol == "2")
-            t.write_symbol = yPlusOne;
+        if (t.read_symbol == "y")
+            t.read_symbol = yMinusOne;
     }
 
     return transitions;
@@ -70,14 +69,11 @@ bool applyTransition(string &tape, int &head, string &state, const vector<Transi
     for (const auto &t : transitions)
     {
         char current_symbol = tape[head];
-
         bool match = (state == t.current_state) &&
                      (t.read_symbol == string(1, current_symbol) || (t.read_symbol == "a" && isdigit(current_symbol)));
-
         if (match)
         {
             state = t.next_state;
-
             // Write symbol
             if (t.write_symbol == "a-1")
                 tape[head] = current_symbol - 1;
@@ -85,10 +81,8 @@ bool applyTransition(string &tape, int &head, string &state, const vector<Transi
                 tape[head] = current_symbol + 1;
             else
                 tape[head] = t.write_symbol[0];
-
             // Move head
             head += (t.direction == "R") ? 1 : -1;
-
             return true;
         }
     }
@@ -133,7 +127,7 @@ int main()
     cout << "Please enter a number: ";
     cin >> input;
 
-    auto transitions = loadTransitions();
+    auto transitions = loadTransitions(8, 3);
     string final_tape = runTuringMachine(input, transitions);
     string output = extractOutput(final_tape);
 
